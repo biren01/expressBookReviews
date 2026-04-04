@@ -78,10 +78,22 @@ public_users.get('/title/:title',function (req, res) {
   //return res.status(300).json({message: "Yet to be implemented"});
 });
 
-//  Get book review
+//  Get book review: Task 5
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  let isbn = req.params.isbn;
+  let book = books[isbn];
+  if (book) {
+    // Check if the reviews object has any entries
+    if (Object.keys(book.reviews).length > 0) {
+        return res.status(200).json(book.reviews);
+    } else {
+        return res.status(404).json({message: "There is no review of this Book"});
+    }
+  }
+  // Handle case where ISBN doesn't exist in the database
+  return res.status(404).json({message: "Book not found"});
+ // return res.status(300).json({message: "Yet to be implemented"});
 });
 
 module.exports.general = public_users;
