@@ -25,11 +25,29 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
+  const getBooks = new Promise((resolve, reject) => {
+      if (books){
+         resolve(books);
+      } else {
+         reject(new Error('No books available'));
+      }  
+     });
+
+    getBooks.then((bookList) => {
+        res.status(200).json(bookList);
+    })
+    .catch((error) => {
+        res.status(404).json({ message: error.message });
+    }); 
+ 
+  /* this is task 1
   return res.status(200).json({
     message: "List of Books", 
     data: books
 });  
-  return res.status(300).json({message: "Yet to be implemented"});
+
+*/
+  //return res.status(300).json({message: "Yet to be implemented"});
 });
 
 // Get book details based on ISBN
