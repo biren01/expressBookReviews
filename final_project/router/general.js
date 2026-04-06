@@ -104,22 +104,27 @@ getBooksByAuthor.then((books) => {
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  let title = req.params.title;
-  let booksByTitle = [];
-  for (let  pages in books) {
-    if (books[pages].title.toLowerCase() === title.toLowerCase()) {
-      booksByTitle.push(books[pages]);
+  const title = req.params.title;
+  const getBooksByTitle = new Promise((resolve, reject) => {
+    const booksByTitle = [];
+    for (let isbn in books) {
+        if (books[isbn].title.toLowerCase() === title.toLowerCase()) {
+            booksByTitle.push(books[isbn]);
+        }
     }
-  }
-  if (booksByTitle.length > 0) {
-    return res.status(200).json({
-      message: "Books with title: " + title,
-      data: booksByTitle
-    });
-  } else {
-    return res.status(404).json({message: "No books found with title: " + title});
-  }
-  //return res.status(300).json({message: "Yet to be implemented"});
+    if (booksByTitle.length > 0) {
+        resolve(booksByTitle);
+    } else {
+        reject(new Error(`No books found with title: ${title}`));
+    }
+});
+
+getBooksByTitle.then((books) => {
+    res.status(200).json(books);
+})  
+.catch((error) => {
+    res.status(404).json({ message: error.message });
+});
 });
 
 //  Get book review: Task 5
