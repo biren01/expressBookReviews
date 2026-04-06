@@ -75,22 +75,30 @@ public_users.get('/isbn/:isbn',function (req, res) {
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
-  let author = req.params.author;
-  let booksByAuthor = [];
-  for (let  pages in books) {
-    if (books[pages].author === author) {
-      booksByAuthor.push(books[pages]);
+  const author = req.params.author;
+  //let booksByAuthor = [];
+  const getBooksByAuthor = new Promise((resolve, reject) => {
+    const booksByAuthor = [];
+    // Iterate over the books object to find matching authors
+    for (const isbn in books) {
+        if (Object.prototype.hasOwnProperty.call(books, isbn)) {
+            if (books[isbn].author.toLowerCase() === author.toLowerCase()) {
+                booksByAuthor.push(books[isbn]);
+            }
+        }
     }
-  }
-  if (booksByAuthor.length > 0) {
-    return res.status(200).json({
-      message: "Books by author: " + author,
-      data: booksByAuthor
-    });
-  } else {
-    return res.status(404).json({message: "No books found for author: " + author});
-  }
-  //return res.status(300).json({message: "Yet to be implemented"});
+    if (booksByAuthor.length > 0) {
+        resolve(booksByAuthor);
+    } else {
+        reject(new Error(`No books found for author: ${author}`));
+    }
+});
+getBooksByAuthor.then((books) => {
+    res.status(200).json(books);
+})
+.catch((error) => {
+    res.status(404).json({ message: error.message });
+});
 });
 
 // Get all books based on title
